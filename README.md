@@ -1,125 +1,153 @@
-# GenieACS Multi-Vendor Complete
+# 🚀 GenieACS Multi-Vendor Complete (Docker Edition)
 
-GenieACS dengan dukungan multi-vendor lengkap, dashboard multi-tab, dan skrip instalasi otomatis.
+Solusi lengkap **GenieACS (TR-069 Auto Configuration Server)** dengan dukungan otomatis multi-vendor modem/ONT, dashboard terintegrasi multi-tab, kustomisasi logo, dan skrip instalasi siap pakai untuk **Windows** dan **Linux (Ubuntu/Debian)**.
 
-## ✨ Fitur
+---
 
-- **Dukungan Multi-Vendor Lengkap**: Huawei, FiberHome, ZTE, CData, GGCLink, VSOL, Mikrotik, dan banyak lagi
-- **Dashboard Multi-Tab**: Antarmuka yang mudah digunakan dengan tab untuk berbagai fitur
-- **Logo Kustom**: Ganti logo sesuai kebutuhan Anda
-- **Skrip Instalasi Otomatis**: Untuk Windows (PowerShell) dan Linux (Bash)
-- **Docker Compose**: Setup cepat dengan container Docker
+## ✨ Fitur Utama
 
-## 🚀 Instalasi
+- **Dukungan Multi-Vendor Otomatis**: Huawei, FiberHome, ZTE, CData, GGCLink, VSOL, MikroTik, dan vendor lainnya.
+- **Dashboard Multi-Tab Terintegrasi**: Akses web dashboard, CWMP, NBI, dan GenieACS UI langsung dalam satu antarmuka terpadu.
+- **Otomatisasi Database (Mongorestore)**: Konfigurasi preset, provisions, dan virtual parameters langsung terpasang saat instalasi.
+- **Kustomisasi Brand/Logo**: Mudah mengganti logo dashboard dan logo web UI GenieACS.
+- **Dukungan Container Docker**: Seluruh layanan (MongoDB, GenieACS, Nginx) terisolasi dan stabil.
 
-### Prasyarat
+---
 
-- Docker dan Docker Compose harus terinstal
-  - Windows: Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
-  - Linux: Install Docker dan Docker Compose melalui package manager
+## 🌐 Alamat Port & Akun Akses Default
 
-### Langkah Instalasi
+Setelah instalasi selesai, layanan dapat diakses melalui browser:
 
-#### Windows
+| Layanan | URL Akses | Keterangan |
+| :--- | :--- | :--- |
+| **Dashboard Multi-Tab** | `http://localhost:8080` | Halaman portal utama & multi-tab |
+| **GenieACS Web UI** | `http://localhost:3000` | Antarmuka manajemen perangkat |
+| **CWMP (TR-069 Inform)**| `http://localhost:7547` | URL untuk dimasukkan ke modem/ONT |
+| **NBI (REST API)** | `http://localhost:7557` | API untuk integrasi sistem/billing |
+| **File Server** | `http://localhost:7567` | Server penyimpanan firmware/konfigurasi |
 
-```powershell
-cd path\to\genieacs
-.\install.ps1
-```
+### Akun Login Default Web UI:
+- **Username**: `admin`
+- **Password**: `admin`
+*(Atau akun Superadmin dari database: `dsbilling` / `ds271015`)*
 
-Skrip `install.ps1` akan membangun image Docker, menyalakan container, dan otomatis me-restore konfigurasi multi-vendor. Jika ingin me-restore ulang secara manual:
+---
 
-```powershell
-.\restore-config.ps1
-```
+## 💻 Panduan Instalasi di Windows
 
-#### Linux
+### 1. Prasyarat: Pasang Docker Desktop
+1. Download installer **Docker Desktop for Windows**: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+2. Jalankan file instalasi dan pastikan opsi **"Use WSL 2 instead of Hyper-V"** tercentang.
+3. Setelah instalasi selesai, lakukan restart komputer jika diminta.
+4. Buka aplikasi **Docker Desktop** dari Start Menu dan tunggu hingga status di pojok kiri bawah berwarna hijau (**Running**).
 
+### 2. Jalankan Instalasi
+1. Buka **PowerShell sebagai Administrator**:
+   - Klik menu **Start** > ketik `PowerShell`.
+   - Klik kanan pada **Windows PowerShell** > pilih **"Run as administrator"**.
+2. Masuk ke direktori proyek ini:
+   ```powershell
+   cd D:\genieacs
+   ```
+3. Jalankan skrip instalasi:
+   ```powershell
+   .\install.ps1
+   ```
+4. Skrip akan mendownload image Docker, menjalankan container, dan melakukan restore database konfigurasi secara otomatis.
+
+---
+
+## 🐧 Panduan Instalasi di Linux / VPS (Ubuntu / Debian)
+
+### 1. Pasang Docker & Docker Compose
+Buka terminal SSH server Anda, lalu jalankan perintah berikut:
 ```bash
-cd /path/to/genieacs
+# Update repository
+sudo apt update && sudo apt upgrade -y
+
+# Pasang Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Pasang Docker Compose Plugin
+sudo apt install -y docker-compose-plugin git
+```
+
+### 2. Clone Repositori & Jalankan Instalasi
+```bash
+# Clone proyek dari GitHub
+cd ~
+git clone https://github.com/dhedyds9-ops/genieacs.git
+cd genieacs
+
+# Berikan izin eksekusi skrip
 chmod +x *.sh
+
+# Jalankan instalasi otomatis
 ./install.sh
 ```
 
-Skrip `install.sh` akan menyalakan container dan otomatis me-restore konfigurasi multi-vendor. Jika ingin me-restore ulang secara manual:
+---
 
-```bash
-./restore-config.sh
-```
+## 📡 Konfigurasi TR-069 pada Modem / ONT / CPE
 
-## 🎨 Kustomisasi Logo
+Agar modem pelanggan dapat terhubung otomatis ke GenieACS:
+1. Buka browser dan login ke web admin modem/ONT (misal: `192.168.1.1`).
+2. Masuk ke menu **Network** > **TR-069** / **CWMP**.
+3. Atur parameter berikut:
+   - **Enable TR-069**: Centang / Enable
+   - **ACS URL**: `http://IP-SERVER-GENIEACS:7547/` *(Ganti dengan IP server/komputer Anda)*
+   - **Periodic Inform Enable**: Enable
+   - **Periodic Inform Interval**: `300` (atau sesuai kebutuhan, misal 60-300 detik)
+   - **ACS Username & Password**: Dikosongkan (kecuali jika Anda mengaktifkan autentikasi CWMP)
+4. Klik **Apply / Save**. Modem akan langsung muncul di tab **Devices** pada GenieACS UI.
 
-Untuk mengganti logo:
+---
 
-1. Siapkan file logo Anda (format SVG, PNG, atau JPG)
-2. Simpan file logo di direktori `logos/` dengan nama `logo.svg` (atau format lain, kemudian update `dashboard.html`)
-3. Restart container nginx:
+## 🛠️ Manajemen & Perintah Operasional
+
+Semua perintah dijalankan di dalam folder `genieacs`:
+
+- **Mengecek Status Container**:
+  ```bash
+  docker ps
+  ```
+- **Mematikan Layanan**:
+  ```bash
+  docker compose down
+  ```
+- **Menyalakan Kembali Layanan**:
+  ```bash
+  docker compose up -d
+  ```
+- **Restore Ulang Konfigurasi Multi-Vendor Secara Manual**:
+  - Di Windows: `.\restore-config.ps1`
+  - Di Linux: `./restore-config.sh`
+- **Melihat Log GenieACS (Troubleshooting)**:
+  ```bash
+  docker logs -f genieacs
+  ```
+
+---
+
+## 🎨 Mengganti Logo Kustom
+
+1. Siapkan file logo Anda dalam format `.svg` atau `.png`.
+2. Simpan file logo ke dalam folder `logos/` dengan nama `logo.svg` atau `logo.png`.
+3. Restart layanan Nginx untuk memperbarui tampilan:
    ```bash
    docker restart genieacs-nginx
    ```
 
-## 🌐 Akses
+---
 
-Setelah instalasi selesai, Anda dapat mengakses:
+## 📋 Daftar Vendor yang Didukung
 
-- **Dashboard Multi-Tab**: http://localhost
-- **UI GenieACS**: http://localhost:3000
-  - Username: `admin`
-  - Password: `admin`
-- **CWMP (TR-069)**: http://localhost:7547
-- **NBI**: http://localhost:7557
-- **File Server**: http://localhost:7567
-
-## 📦 Struktur Direktori
-
-```
-Genieacs/
-├── docker-compose.yml    # Konfigurasi Docker Compose
-├── nginx.conf            # Konfigurasi Nginx
-├── dashboard.html        # Dashboard multi-tab
-├── install.ps1           # Skrip instalasi Windows
-├── install.sh            # Skrip instalasi Linux
-├── restore-config.ps1    # Skrip restore konfigurasi (Windows)
-├── restore-config.sh     # Skrip restore konfigurasi (Linux)
-├── db/                   # Konfigurasi database multi-vendor
-├── logos/                # Direktori untuk logo kustom
-├── provisions/           # Skrip provision untuk masing-masing perangkat
-│   ├── default.js
-│   ├── zte.js
-│   ├── fiberhome.js
-│   ├── huawei.js
-│   ├── ggclink.js
-│   ├── vsol.js
-│   ├── cdata.js
-│   └── mikrotik.js
-├── ext/                  # Direktori untuk ekstensi GenieACS
-└── files/                # Direktori untuk file (firmware, dll.)
-```
-
-## 📋 Vendor yang Didukung
-
-- Huawei Technologies Co., Ltd
-- FiberHome
-- ZTE
-- CData (CTCOM, MONU)
-- GGCLink (XCU, XCMCC)
-- VSOL
-- MikroTik
-- ALCL
-- TDTC
-- ZIONCOM
-- Dan masih banyak lagi!
-
-## ⚠️ Catatan Penting
-
-- Ganti nilai `GENIEACS_UI_JWT_SECRET` di `docker-compose.yml` dengan string rahasia yang aman untuk penggunaan produksi
-- Pastikan port `80`, `3000`, `7547`, `7557`, dan `7567` tidak diblokir oleh firewall
-- Jika Anda memiliki konfigurasi kustom sendiri, backup terlebih dahulu sebelum menjalankan `restore-config`
-
-## 🤝 Kontribusi
-
-Kontribusi selalu diterima! Silakan buat pull request atau laporkan issue jika menemukan bug.
-
-## 📄 Lisensi
-
-Proyek ini didasari oleh GenieACS dengan lisensi AGPL-3.0.
+- **Huawei Technologies Co., Ltd**
+- **FiberHome**
+- **ZTE**
+- **CData** (CTCOM, MONU)
+- **GGCLink** (XCU, XCMCC)
+- **VSOL**
+- **MikroTik**
+- **ALCL / TDTC / ZIONCOM** dan modem berbasis TR-069 lainnya.
