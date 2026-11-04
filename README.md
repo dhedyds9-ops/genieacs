@@ -1,153 +1,247 @@
-# 🚀 GenieACS Multi-Vendor Complete (Docker Edition)
+# 🚀 GenieACS Multi-Vendor Complete Guide & Installation
 
-Solusi lengkap **GenieACS (TR-069 Auto Configuration Server)** dengan dukungan otomatis multi-vendor modem/ONT, dashboard terintegrasi multi-tab, kustomisasi logo, dan skrip instalasi siap pakai untuk **Windows** dan **Linux (Ubuntu/Debian)**.
-
----
-
-## ✨ Fitur Utama
-
-- **Dukungan Multi-Vendor Otomatis**: Huawei, FiberHome, ZTE, CData, GGCLink, VSOL, MikroTik, dan vendor lainnya.
-- **Dashboard Multi-Tab Terintegrasi**: Akses web dashboard, CWMP, NBI, dan GenieACS UI langsung dalam satu antarmuka terpadu.
-- **Otomatisasi Database (Mongorestore)**: Konfigurasi preset, provisions, dan virtual parameters langsung terpasang saat instalasi.
-- **Kustomisasi Brand/Logo**: Mudah mengganti logo dashboard dan logo web UI GenieACS.
-- **Dukungan Container Docker**: Seluruh layanan (MongoDB, GenieACS, Nginx) terisolasi dan stabil.
+Solusi lengkap **GenieACS (TR-069 Auto Configuration Server)** dengan dukungan multi-vendor modem/ONT (ZTE, Huawei, FiberHome, CData, VSOL, Mikrotik, dll.), terintegrasi dashboard, kustomisasi logo, dan panduan instalasi lengkap untuk **Ubuntu Linux** dan **Windows**.
 
 ---
 
-## 🌐 Alamat Port & Akun Akses Default
+## 📌 Informasi Login & Port Akses Default
 
 Setelah instalasi selesai, layanan dapat diakses melalui browser:
 
 | Layanan | URL Akses | Keterangan |
 | :--- | :--- | :--- |
-| **Dashboard Multi-Tab** | `http://localhost:8080` | Halaman portal utama & multi-tab |
-| **GenieACS Web UI** | `http://localhost:3000` | Antarmuka manajemen perangkat |
-| **CWMP (TR-069 Inform)**| `http://localhost:7547` | URL untuk dimasukkan ke modem/ONT |
-| **NBI (REST API)** | `http://localhost:7557` | API untuk integrasi sistem/billing |
-| **File Server** | `http://localhost:7567` | Server penyimpanan firmware/konfigurasi |
+| **GenieACS Web UI** | `http://IP-SERVER:3000` | Tampilan admin & manajemen perangkat |
+| **Dashboard Multi-Tab** | `http://IP-SERVER:8080` | Portal dashboard terpadu (khusus Docker) |
+| **CWMP (TR-069 Inform)**| `http://IP-SERVER:7547` | URL ACS untuk disetting di Modem/ONT |
+| **NBI (REST API)** | `http://IP-SERVER:7557` | API untuk integrasi sistem/billing |
+| **File Server (FS)** | `http://IP-SERVER:7567` | Server firmware & file download |
 
-### Akun Login Default Web UI:
-- **Username**: `admin`
-- **Password**: `admin`
-*(Atau akun Superadmin dari database: `dsbilling` / `ds271015`)*
-
----
-
-## 💻 Panduan Instalasi di Windows
-
-### 1. Prasyarat: Pasang Docker Desktop
-1. Download installer **Docker Desktop for Windows**: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
-2. Jalankan file instalasi dan pastikan opsi **"Use WSL 2 instead of Hyper-V"** tercentang.
-3. Setelah instalasi selesai, lakukan restart komputer jika diminta.
-4. Buka aplikasi **Docker Desktop** dari Start Menu dan tunggu hingga status di pojok kiri bawah berwarna hijau (**Running**).
-
-### 2. Jalankan Instalasi
-1. Buka **PowerShell sebagai Administrator**:
-   - Klik menu **Start** > ketik `PowerShell`.
-   - Klik kanan pada **Windows PowerShell** > pilih **"Run as administrator"**.
-2. Masuk ke direktori proyek ini:
-   ```powershell
-   cd D:\genieacs
-   ```
-3. Jalankan skrip instalasi:
-   ```powershell
-   .\install.ps1
-   ```
-4. Skrip akan mendownload image Docker, menjalankan container, dan melakukan restore database konfigurasi secara otomatis.
+### 🔑 Kredensial Login Default:
+* **Username**: `dsbilling` *(Superadmin)* atau `admin`
+* **Password**: `ds271015` (untuk dsbilling) atau `admin` (untuk admin)
 
 ---
 
-## 🐧 Panduan Instalasi di Linux / VPS (Ubuntu / Debian)
+## 🐧 PANDUAN INSTALASI DI UBUNTU LINUX
 
-### 1. Pasang Docker & Docker Compose
-Buka terminal SSH server Anda, lalu jalankan perintah berikut:
+Tersedia 2 metode instalasi. **Metode 1 (Docker)** sangat disarankan karena paling cepat dan konfigurasi multi-vendor otomatis terpasang.
+
+---
+
+### METODE 1: Menggunakan Docker (Rekomendasi - Cepat & Praktis)
+
+Cocok untuk server baru maupun yang sudah berjalan.
+
+#### 1. Persiapan Server & Install Docker
+Jalankan di terminal server Ubuntu Anda:
 ```bash
-# Update repository
+# Update paket sistem
 sudo apt update && sudo apt upgrade -y
 
-# Pasang Docker
+# Install dependensi (curl & git)
+sudo apt install -y curl git
+
+# Install Docker otomatis
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 # Pasang Docker Compose Plugin
-sudo apt install -y docker-compose-plugin git
+sudo apt install -y docker-compose-plugin
 ```
 
-### 2. Clone Repositori & Jalankan Instalasi
+#### 2. Clone Repositori Ini
 ```bash
-# Clone proyek dari GitHub
 cd ~
 git clone https://github.com/dhedyds9-ops/genieacs.git
 cd genieacs
+```
 
-# Berikan izin eksekusi skrip
+#### 3. Jalankan Skrip Instalasi Otomatis
+```bash
+# Berikan izin eksekusi
 chmod +x *.sh
 
-# Jalankan instalasi otomatis
+# Jalankan instalasi
 ./install.sh
+```
+
+#### 4. Restore Database Multi-Vendor (Jika Diperlukan)
+Jika saat instalasi restore database gagal atau ingin me-restore ulang:
+```bash
+# Hapus file non-database di container
+docker exec genieacs-mongodb rm -f "/tmp/genieacs-db/multitab device.txt" /tmp/genieacs-db/prelude.json
+
+# Restore data konfigurasi multi-vendor
+docker exec genieacs-mongodb mongorestore --noIndexRestore --db genieacs --drop /tmp/genieacs-db
+
+# Aktifkan kredensial default
+docker exec genieacs-mongodb mongo genieacs --eval '
+  db.users.deleteOne({_id: "alijayanet"});
+  db.users.updateOne({_id: "dsbilling"}, {$set: {roles: "admin"}});
+  db.users.updateOne({_id: "admin"}, {$set: {roles: "admin"}});
+'
+
+# Restart GenieACS
+docker restart genieacs
 ```
 
 ---
 
-## 📡 Konfigurasi TR-069 pada Modem / ONT / CPE
+### METODE 2: Instalasi Native di Ubuntu (Tanpa Docker / Node.js & Systemd)
 
-Agar modem pelanggan dapat terhubung otomatis ke GenieACS:
-1. Buka browser dan login ke web admin modem/ONT (misal: `192.168.1.1`).
-2. Masuk ke menu **Network** > **TR-069** / **CWMP**.
-3. Atur parameter berikut:
-   - **Enable TR-069**: Centang / Enable
-   - **ACS URL**: `http://IP-SERVER-GENIEACS:7547/` *(Ganti dengan IP server/komputer Anda)*
-   - **Periodic Inform Enable**: Enable
-   - **Periodic Inform Interval**: `300` (atau sesuai kebutuhan, misal 60-300 detik)
-   - **ACS Username & Password**: Dikosongkan (kecuali jika Anda mengaktifkan autentikasi CWMP)
-4. Klik **Apply / Save**. Modem akan langsung muncul di tab **Devices** pada GenieACS UI.
+Gunakan metode ini jika server memiliki spesifikasi RAM sangat terbatas dan ingin menjalankan GenieACS murni sebagai service OS:
+
+#### 1. Pasang Node.js LTS
+```bash
+sudo apt update
+sudo apt install -y curl gnupg
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+
+#### 2. Pasang MongoDB
+```bash
+sudo apt install -y mongodb
+sudo systemctl enable --now mongodb
+```
+
+#### 3. Pasang GenieACS via NPM
+```bash
+sudo npm install -g genieacs@1.2.9
+```
+
+#### 4. Buat User & Konfigurasi Environment
+```bash
+sudo useradd --system --no-create-home --user-group genieacs
+sudo mkdir -p /opt/genieacs /opt/genieacs/ext /var/log/genieacs
+sudo chown -R genieacs:genieacs /opt/genieacs /var/log/genieacs
+```
+
+Buat file environment:
+```bash
+sudo nano /opt/genieacs/genieacs.env
+```
+Isi dengan:
+```ini
+GENIEACS_MONGODB_CONNECTION_URL=mongodb://127.0.0.1/genieacs
+GENIEACS_CWMP_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-cwmp-access.log
+GENIEACS_NBI_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-nbi-access.log
+GENIEACS_FS_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-fs-access.log
+GENIEACS_UI_ACCESS_LOG_FILE=/var/log/genieacs/genieacs-ui-access.log
+GENIEACS_UI_JWT_SECRET=kunci-rahasia-acak-anda
+```
+
+#### 5. Buat Systemd Service
+Buat service untuk ke-4 komponen GenieACS:
+
+* **CWMP Service** (`sudo nano /etc/systemd/system/genieacs-cwmp.service`):
+```ini
+[Unit]
+Description=GenieACS CWMP
+After=network.target
+
+[Service]
+User=genieacs
+EnvironmentFile=/opt/genieacs/genieacs.env
+ExecStart=/usr/bin/genieacs-cwmp
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+* **NBI Service** (`sudo nano /etc/systemd/system/genieacs-nbi.service`):
+```ini
+[Unit]
+Description=GenieACS NBI
+After=network.target
+
+[Service]
+User=genieacs
+EnvironmentFile=/opt/genieacs/genieacs.env
+ExecStart=/usr/bin/genieacs-nbi
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+* **FS Service** (`sudo nano /etc/systemd/system/genieacs-fs.service`):
+```ini
+[Unit]
+Description=GenieACS FS
+After=network.target
+
+[Service]
+User=genieacs
+EnvironmentFile=/opt/genieacs/genieacs.env
+ExecStart=/usr/bin/genieacs-fs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+* **UI Service** (`sudo nano /etc/systemd/system/genieacs-ui.service`):
+```ini
+[Unit]
+Description=GenieACS UI
+After=network.target
+
+[Service]
+User=genieacs
+EnvironmentFile=/opt/genieacs/genieacs.env
+ExecStart=/usr/bin/genieacs-ui
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Aktifkan semua service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now genieacs-cwmp genieacs-nbi genieacs-fs genieacs-ui
+```
 
 ---
 
-## 🛠️ Manajemen & Perintah Operasional
+## 💻 PANDUAN INSTALASI DI WINDOWS
 
-Semua perintah dijalankan di dalam folder `genieacs`:
-
-- **Mengecek Status Container**:
-  ```bash
-  docker ps
-  ```
-- **Mematikan Layanan**:
-  ```bash
-  docker compose down
-  ```
-- **Menyalakan Kembali Layanan**:
-  ```bash
-  docker compose up -d
-  ```
-- **Restore Ulang Konfigurasi Multi-Vendor Secara Manual**:
-  - Di Windows: `.\restore-config.ps1`
-  - Di Linux: `./restore-config.sh`
-- **Melihat Log GenieACS (Troubleshooting)**:
-  ```bash
-  docker logs -f genieacs
-  ```
-
----
-
-## 🎨 Mengganti Logo Kustom
-
-1. Siapkan file logo Anda dalam format `.svg` atau `.png`.
-2. Simpan file logo ke dalam folder `logos/` dengan nama `logo.svg` atau `logo.png`.
-3. Restart layanan Nginx untuk memperbarui tampilan:
-   ```bash
-   docker restart genieacs-nginx
+1. Download dan pasang **[Docker Desktop for Windows](https://www.docker.com/products/docker-desktop)**. Pastikan opsi WSL 2 tercentang.
+2. Buka **PowerShell sebagai Administrator** (Klik kanan > *Run as Administrator*).
+3. Masuk ke folder project:
+   ```powershell
+   cd D:\genieacs
+   ```
+4. Jalankan script instalasi:
+   ```powershell
+   .\install.ps1
    ```
 
 ---
 
-## 📋 Daftar Vendor yang Didukung
+## 📡 PANDUAN SETTING MODEM / ONT (TR-069)
 
-- **Huawei Technologies Co., Ltd**
-- **FiberHome**
-- **ZTE**
-- **CData** (CTCOM, MONU)
-- **GGCLink** (XCU, XCMCC)
-- **VSOL**
-- **MikroTik**
-- **ALCL / TDTC / ZIONCOM** dan modem berbasis TR-069 lainnya.
+Agar modem pelanggan (ZTE, Huawei, Fiberhome, VSOL, dll.) muncul di GenieACS:
+
+1. Buka browser dan login ke web modem (misal `192.168.1.1`).
+2. Masuk ke menu **Network** / **Management** > **TR-069** / **CWMP**.
+3. Atur parameter:
+   * **TR-069 Client**: Enable
+   * **ACS URL**: `http://IP-SERVER-GENIEACS:7547/`
+   * **Periodic Inform**: Enable
+   * **Inform Interval**: `300` detik (atau 60–300 detik)
+   * **ACS Username & Password**: Kosongkan (default)
+4. Klik **Apply / Save**. Perangkat akan otomatis terdeteksi di tab **Devices** pada GenieACS UI.
+
+---
+
+## ⚙️ PERINTAH OPERASIONAL PENTING (DOCKER)
+
+Semua perintah dijalankan di dalam folder `genieacs`:
+* **Cek status container**: `docker ps`
+* **Stop GenieACS**: `docker compose down`
+* **Start GenieACS**: `docker compose up -d`
+* **Lihat log error**: `docker logs -f genieacs`
+* **Restart service**: `docker compose restart`
