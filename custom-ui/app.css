@@ -1955,6 +1955,62 @@ body:not(.genie-default-ui) td.cell-active {
     border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
+/* Table Action Buttons (Detail & Summon) */
+body:not(.genie-default-ui) td .device-link,
+body:not(.genie-default-ui) td a[href*="#!/devices/"] {
+    background: rgba(37, 99, 235, 0.22) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.45) !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    transition: all 0.2s !important;
+    cursor: pointer !important;
+}
+
+body:not(.genie-default-ui) td .device-link:hover,
+body:not(.genie-default-ui) td a[href*="#!/devices/"]:hover {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+body:not(.genie-default-ui) td button.summon-button,
+body:not(.genie-default-ui) td .summon-button {
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    margin-left: 6px !important;
+    transition: all 0.2s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+body:not(.genie-default-ui) td button.summon-button:hover,
+body:not(.genie-default-ui) td .summon-button:hover {
+    background: #f59e0b !important;
+    color: #000000 !important;
+}
+
+/* Row Hover & Clickable cursor */
+body:not(.genie-default-ui) tbody tr {
+    cursor: pointer !important;
+}
+
+body:not(.genie-default-ui) tbody tr:hover td {
+    background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
 /* Footer & Export */
 .genie-footer-bar {
     display: flex;

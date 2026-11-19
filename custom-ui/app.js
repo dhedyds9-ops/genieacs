@@ -175,7 +175,40 @@ import{a as me,b as nt,c as Ue}from"./chunk-CDG7S4P5.js";var xt=me((uf,ii)=>{"us
 
     function formatTableCells(table) {
         const rows = table.querySelectorAll('tbody tr');
+
+        // Pindahkan kolom Aksi (Show/Summon) ke sebelah kiri jika berada di sebelah kanan
+        const headerRow = table.querySelector('thead tr') || table.querySelector('tr');
+        if (headerRow) {
+            const ths = Array.from(headerRow.children);
+            const actionIndex = ths.findIndex((th, i) => i > 2 && (
+                th.textContent.toLowerCase().includes('aksi') ||
+                th.textContent.toLowerCase().includes('action') ||
+                th.textContent.toLowerCase().includes('show') ||
+                th.querySelector('.summon-button, .device-link')
+            ));
+            if (actionIndex !== -1) {
+                headerRow.insertBefore(headerRow.children[actionIndex], headerRow.children[1]);
+                rows.forEach(r => {
+                    if (r.children[actionIndex]) {
+                        r.insertBefore(r.children[actionIndex], r.children[1]);
+                    }
+                });
+            }
+        }
+
         rows.forEach((row) => {
+            // Klik ganda pada baris langsung membuka detail perangkat
+            if (!row.dataset.hasDblClick) {
+                row.dataset.hasDblClick = 'true';
+                row.title = 'Klik ganda untuk membuka detail perangkat';
+                row.addEventListener('dblclick', (e) => {
+                    const link = row.querySelector('a[href*="#!/devices/"], a.device-link, .device-link');
+                    if (link) {
+                        link.click();
+                    }
+                });
+            }
+
             const cells = row.querySelectorAll('td');
 
             cells.forEach(cell => {

@@ -7,10 +7,21 @@
 - label: "'No'"
   type: "'row-number'"
 
+# --- TOMBOL AKSI LANGSUNG DI SEBELAH KIRI (DEPAN) ---
+- label: "'Aksi'"
+  type: "'container'"
+  components:
+    - type: "'device-link'"
+      label: "'Detail'"
+    - type: "'summon-button'"
+
+# --- USERNAME PPPoE (BISA DIKLIK LANGSUNG MENUJU DETAIL) ---
 - label: "'PPPoE'"
+  type: "'device-link'"
   parameter: VirtualParameters.pppoeUsername
   sort: VirtualParameters.pppoeUsername
 
+# --- STATUS ONLINE / OFFLINE ---
 - label: "'Status'"
   element: "'span.inform'"
   parameter: Events.Inform
@@ -20,7 +31,9 @@
     - chart: "'online'"
       type: "'overview-dot'"
 
+# --- SERIAL NUMBER (BISA DIKLIK LANGSUNG MENUJU DETAIL) ---
 - label: "'Serial number'"
+  type: "'device-link'"
   parameter: DeviceID.SerialNumber
   sort: DeviceID.SerialNumber
 
