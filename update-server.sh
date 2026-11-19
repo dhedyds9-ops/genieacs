@@ -37,7 +37,16 @@ fi
 echo -e "${GREEN}✓ Container Docker berhasil direload${NC}"
 echo ""
 
-# 3. Permissions
+# 3. Native install check (if running without Docker)
+if [ -d "/usr/lib/node_modules/genieacs/public" ]; then
+    echo -e "${YELLOW}Terdeteksi instalasi native GenieACS, memperbarui public asset...${NC}"
+    cp -f custom-ui/app.css /usr/lib/node_modules/genieacs/public/app.css
+    cp -f custom-ui/app.js /usr/lib/node_modules/genieacs/public/app.js
+    systemctl restart genieacs-ui 2>/dev/null || true
+    echo -e "${GREEN}✓ File UI native berhasil diperbarui${NC}"
+fi
+
+# 4. Permissions
 echo -e "${YELLOW}[3/3] Menyesuaikan izin eksekusi skrip...${NC}"
 chmod +x *.sh custom-ui/*.sh 2>/dev/null || true
 echo -e "${GREEN}✓ Izin eksekusi diperbarui${NC}"
@@ -47,13 +56,12 @@ echo -e "${CYAN}============================================${NC}"
 echo -e "${GREEN}  UPDATE SERVER SELESAI & BERHASIL!         ${NC}"
 echo -e "${CYAN}============================================${NC}"
 echo ""
-echo -e "${NC}File tema dan konfigurasi UI modern sudah siap:${NC}"
-echo -e "${CYAN}  • custom-ui/genieacs-modern-ui.user.js${NC}"
-echo -e "${CYAN}  • custom-ui/index_page_devices.yaml${NC}"
+echo -e "${NC}Mode Gelap & UI Modern sudah OTOMATIS AKTIF di server!${NC}"
+echo -e "${CYAN}  • URL Akses: http://IP-SERVER:3000 atau http://IP-SERVER:8080${NC}"
 echo ""
-echo -e "${YELLOW}Cara menerapkan tampilan:${NC}"
-echo -e "1. Buka GenieACS UI (port 3000) -> Admin -> Config -> Edit index page"
-echo -e "2. Salin isi file: custom-ui/index_page_devices.yaml lalu klik Commit"
-echo -e "3. Pasang Tampermonkey di browser dan instal script dari:"
-echo -e "   http://IP-SERVER:8080/custom-ui/genieacs-modern-ui.user.js"
+echo -e "${YELLOW}Untuk memunculkan kolom tabel lengkap (PPPoE, RX dBm, Klien, dll):${NC}"
+echo -e "1. Buka GenieACS UI -> Masuk ke menu: Admin -> Config"
+echo -e "2. Klik 'Edit index page' (bagian devices)"
+echo -e "3. Salin isi file: custom-ui/index_page_devices.yaml lalu klik Commit"
+echo -e "4. Tekan Ctrl+F5 di browser Anda. Selesai!"
 echo ""
