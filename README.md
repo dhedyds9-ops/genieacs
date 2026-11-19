@@ -237,6 +237,33 @@ Agar modem pelanggan (ZTE, Huawei, Fiberhome, VSOL, dll.) muncul di GenieACS:
 
 ---
 
+## 🎨 Tampilan Modern UI & Aksi Massal (Dark Navy + Spreadsheet)
+
+Projek ini dilengkapi dengan konfigurasi UI Modern seperti tampilan spreadsheet Excel dengan Dark Theme, pewarnaan otomatis redaman RX (dBm), filter cepat, serta tombol aksi massal (Summon, Reboot, Tag, Push file, Reset Pabrik):
+
+1. **Atur Kolom Tabel di GenieACS**:
+   * Buka Web UI GenieACS (`http://IP-SERVER:3000`) -> **Admin** -> **Config** -> **Edit index page**.
+   * Salin seluruh isi dari file [custom-ui/index_page_devices.yaml](custom-ui/index_page_devices.yaml) dan klik **Commit**.
+2. **Pasang Tampilan Modern di Browser**:
+   * Pasang ekstensi **Tampermonkey** di browser.
+   * Tambahkan skrip dari [custom-ui/genieacs-modern-ui.user.js](custom-ui/genieacs-modern-ui.user.js).
+   * Buka kembali GenieACS UI, tampilan otomatis berubah menjadi Dark Navy Spreadsheet!
+
+---
+
+## 🔄 CARA UPDATE DI SERVER LINUX / VPS
+
+Cukup jalankan satu perintah di folder project server Anda:
+```bash
+./update-server.sh
+```
+Skrip ini akan otomatis:
+1. Menarik update terbaru dari GitHub (`git pull origin main`).
+2. Mereload container Docker dan Nginx proxy.
+3. Memperbarui izin akses skrip.
+
+---
+
 ## ⚙️ PERINTAH OPERASIONAL PENTING (DOCKER)
 
 Semua perintah dijalankan di dalam folder `genieacs`:

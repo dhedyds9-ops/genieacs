@@ -1,0 +1,69 @@
+# ==============================================================================
+# GenieACS Index Page Configuration (Devices Table)
+# Salin dan tempel konfigurasi ini ke:
+# GenieACS Web UI -> Admin -> Config -> Edit index page (atau index_page:devices)
+# ==============================================================================
+
+- label: "'No'"
+  type: "'row-number'"
+
+- label: "'PPPoE'"
+  parameter: VirtualParameters.pppoeUsername
+  sort: VirtualParameters.pppoeUsername
+
+- label: "'Status'"
+  element: "'span.inform'"
+  parameter: Events.Inform
+  type: "'container'"
+  components:
+    - type: "'parameter'"
+    - chart: "'online'"
+      type: "'overview-dot'"
+
+- label: "'Serial number'"
+  parameter: DeviceID.SerialNumber
+  sort: DeviceID.SerialNumber
+
+- label: "'MAC'"
+  parameter: VirtualParameters.pppoeMac
+  sort: VirtualParameters.pppoeMac
+
+- label: "'Produk'"
+  parameter: DeviceID.ProductClass
+  sort: DeviceID.ProductClass
+
+- label: "'WiFi SSID'"
+  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
+
+- label: "'Klien'"
+  parameter: VirtualParameters.activedevices
+  sort: VirtualParameters.activedevices
+
+- label: "'RX (dBm)'"
+  parameter: VirtualParameters.RXPower
+  sort: VirtualParameters.RXPower
+
+- label: "'IP PPPoE'"
+  parameter: VirtualParameters.pppoeIP
+  type: "'container'"
+  components:
+    - type: "'parameter'"
+  element:
+    tag: "'a'"
+    attributes:
+      href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.pppoeIP)'
+      target: "'_blank'"
+
+- label: "'IP TR-069'"
+  parameter: VirtualParameters.IPTR069
+  type: "'container'"
+  components:
+    - type: "'parameter'"
+  element:
+    tag: "'a'"
+    attributes:
+      href: '"http://" || ENCODEURICOMPONENT(VirtualParameters.IPTR069)'
+      target: "'_blank'"
+
+- label: "'Uptime'"
+  parameter: VirtualParameters.getdeviceuptime
